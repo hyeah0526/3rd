@@ -15,13 +15,14 @@ def register(request) :
         username = request.POST.get('username', None)
         password = request.POST.get('password', None)
         re_password = request.POST.get('re-password', None)
+        useremail = request.POST.get('useremail', None)
 
         # 비밀번호가 맞지않으면 에러 메세지와 함께 반환시키기
         # response시키기 위해서 import시켜주기 
         res_data = {}   # 에러메세지
 
         # 값이 하나라도 없으면 예외처리 해주기
-        if not (username and password and re_password):
+        if not (username and password and re_password and useremail):
             res_data['error'] = '모든 값을 입력해야합니다.'
 
         # 비밀번호와 비밀번호 확인이 다를 경우 예의처리
@@ -33,7 +34,8 @@ def register(request) :
             # 클래스 import해주고 값 담아주기
             fcuser = Fcuser(
                 username = username,
-                password=make_password(password) # 비밀번호 암호화
+                password=make_password(password), # 비밀번호 암호화
+                useremail = useremail
             )
             # 저장
             fcuser.save()
