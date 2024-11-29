@@ -75,3 +75,28 @@ python manage.py migrate
  {% csrf_token %}
 
 4. views.py에서 백엔드코드작성
+
+
+----------------------------------------------------------------------
+블록 지정해서 사용하는 방법
+1. 기초틀이 될 html을 만들어준다
+2. 가장 큰 틀을 설정 하고 들어갈 영역 부분에 작성해준다 
+    {% block 블록명 %} 블록이 시작하는지점
+    {% endblock %} 블록이 끝나는 지점
+3. 이제 다른 html로 가서 먼저 해당 기초틀을 상속받아준다
+    {% extends "기초틀이 될 html이름" %}
+4. 아까 지정했던 블록명을 사용하여 시작과 끝을 지정해준다
+    {% block 블록명 %}
+    {% endblock %}
+----------------------------------------------------------------------
+forms.py 사용방법
+장고가 제공하는 form을 사용
+1. 받아야하는 값을 forms.py 생성후 작성
+from django import forms
+
+class LoginForm(forms.Form):
+    # 받아야하는 값 설정
+    username = forms.CharField(max_length=32)
+    password = forms.CharField()
+
+2. views.py에서 코드 작성

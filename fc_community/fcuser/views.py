@@ -1,40 +1,67 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Fcuser
 # 비밀번호 암호화(make_password), 확인(check_password)
 from django.contrib.auth.hashers import make_password, check_password
 from django.http import HttpResponse
+from .forms import LoginForm #form.py
+
+# home
+def home(request):
+    user_id = request.session.get('user')
+
+    if user_id : 
+        fcuser = Fcuser.objects.get(pk=user_id)
+        return HttpResponse(fcuser.username)
+    return HttpResponse('Home!')
 
 # 로그인
 def login(request) :
-    if request.method == 'GET' :
-        return render(request, 'login.html')
-    
-    elif request.method == 'POST' :
-        # 받아온 값 확인
-        username_input = request.POST.get('username', None)
-        password_input = request.POST.get('password', None)
-        print('username_input--> ', username_input)
-        print('password_input--> ', password_input)
-
-        # 값이 둘다 있는지 확인
-        res_data = {}
-        if not (username_input and password_input) :
-            res_data['error'] = '모든 값을 입력해야합니다.'
-            return render(request, 'login.html', res_data)
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            return redirect('/')
+    else:
+        form = LoginForm()
         
-        else :
-            # 아이디와 비밀번호가 일치하는지 확인
-            # fcuser안의 objects안에 get이라는 함수를 사용
-            # get안에 조건을 작성하여 사용자가 작성한 username이 있는지 확인 후 가져옴
-            fcuser = Fcuser.objects.get(username=username_input)
-            print('디버깅 --> ', fcuser)
-            if check_password(fcuser.password, password_input):
-                # 비밀번호가 맞으면 로그인 처리
-                # return render(request, 'login.html')
-                pass
-            else:
-                res_data['error'] = '비멀번호가 틀렸습니다.'
-            return render(request, 'login.html', res_data)
+    return render(request, 'login.html', {'form':form})
+
+
+
+    # if request.method == 'GET' :
+    #     return render(request, 'login.html')
+    
+    # elif request.method == 'POST' :
+    #     # 받아온 값 확인
+    #     username_input = request.POST.get('username', None)
+    #     password_input = request.POST.get('password', None)
+    #     print('username_input--> ', username_input)
+    #     print('password_input--> ', password_input)
+
+    #     # 값이 둘다 있는지 확인
+    #     res_data = {}
+    #     if not (username_input and password_input) :
+    #         res_data['error'] = '모든 값을 입력해야합니다.'
+    #         return render(request, 'login.html', res_data)
+        
+    #     else :
+    #         # 아이디와 비밀번호가 일치하는지 확인
+    #         # fcuser안의 objects안에 get이라는 함수를 사용
+    #         # get안에 조건을 작성하여 사용자가 작성한 username이 있는지 확인 후 가져옴
+    #         fcuser = Fcuser.objects.get(username=username_input)
+    #         print('비밀번호 일치여부', check_password(password_input, fcuser.password))
+
+    #         if check_password(password_input, fcuser.password):
+    #             print('비밀번호 일치!')
+    #             # 비밀번호가 맞으면 로그인 처리
+    #             # return render(request, 'login.html')
+    #             # 세션안에 있는 user에 사용자 아이디를 넣기
+    #             request.session['user'] = fcuser.id
+
+    #             # 로그인 -> 홈으로 이동 (리다이렉트)
+    #             return redirect('/')
+    #         else:
+    #             res_data['error'] = '비멀번호가 틀렸습니다.'
+    #         return render(request, 'login.html', res_data)
 
 
 
